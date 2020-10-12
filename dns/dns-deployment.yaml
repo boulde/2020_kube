@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dns-deploy
+  labels:
+    app: dns-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dns-deploy
+  template:
+    metadata:
+      labels:
+        app: dns-deploy
+    spec:
+      hostname: appname
+      subdomain: default-subdomain
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: dns-deploy
+        image: arisu1000/simple-container-app:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: dns-deploy
+  name: dns-deploy-svc
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30090
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: dns-deploy
+  type: NodePort
