@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-pvc
+  labels:
+    app: deploy-pvc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deploy-pvc
+  template:
+    metadata:
+      labels:
+        app: deploy-pvc
+    spec:
+      containers:
+      - name: deploy-pvc
+        image: gcr.io/google-samples/node-hello:1.0
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: "/tmp"
+          name: myvolume
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim:
+          claimName: pvc-hostpath
